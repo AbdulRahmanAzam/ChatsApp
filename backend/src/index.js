@@ -12,6 +12,7 @@ import messageRoute from "./routes/messageRoute.js";
 dotenv.config();
 // const app = express(); // Moved to socket.js
 const PORT = process.env.PORT;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 
 app.use(express.json({ limit: "10mb"})); // to parse json body
@@ -22,11 +23,14 @@ app.use(cors({
   credentials: true,
 }))
 
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "ChatsApp API is running" });
+});
 app.use("/api/auth", authRoute);
 app.use("/api/messages", messageRoute);
 
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  connectDB();
+  connectDB(MONGODB_URI);
 });
