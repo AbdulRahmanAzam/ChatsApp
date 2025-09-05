@@ -19,8 +19,7 @@ app.use(express.json({ limit: "10mb"})); // to parse json body
 app.use(express.urlencoded({ limit: "10mb", extended: true })); // to parse urlencoded body
 app.use(cookieParser()); // to parse cookies
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: process.env.FRONTEND_URL || "https://0xchats.vercel.app/" || "http://localhost:5173",
   credentials: true,
 }))
 
