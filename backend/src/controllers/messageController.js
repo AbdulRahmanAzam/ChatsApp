@@ -1,5 +1,7 @@
 import Message from "../models/messageModel.js";
 import User from "../models/userModel.js";
+import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 
 export const getUsersForSidebar = async ( req, res) => {
     try {
@@ -22,8 +24,8 @@ export const getMessages = async (req, res) => {
         // Fetch messages between myId and userToChatId from the database
         const messages = await Message.find({
             $or: [
-                {senderId: myId, recieverId: userToChatId},
-                {senderId: userToChatId, recieverId: myId}
+                {senderId: myId, receiverId: userToChatId},
+                {senderId: userToChatId, receiverId: myId}
             ]
         })
 
@@ -38,7 +40,7 @@ export const getMessages = async (req, res) => {
 export const sendMessage = async (req, res) => {
     try {
         const { text, image } = req.body;
-        const {id: recieverId} = req.params; // id of the user to whom the message is sent
+        const {id: receiverId} = req.params; // id of the user to whom the message is sent
         const senderId = req.user._id; // id of the logged in user sending the message
 
         if(!text && !image){
@@ -54,16 +56,20 @@ export const sendMessage = async (req, res) => {
 
         const newMessage = new Message({
             senderId,
-            recieverId,
+            receiverId,
             text,
             image: imageUrl,
         })
 
         await newMessage.save();
 
-        // TODO: realtime functionality goes here
-        res.status(201).json(newMessage);
+        // real time functionality
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("newMessage", newMessage); // only sending to receiver
+        }
 
+        res.status(201).json(newMessage);
     } catch (error) {
         console.log("Error in sendMessage:", error.message);
         res.status(500).json({ message: "Server error" });
