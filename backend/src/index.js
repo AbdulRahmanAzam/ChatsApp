@@ -19,7 +19,7 @@ app.use(express.json({ limit: "10mb"})); // to parse json body
 app.use(express.urlencoded({ limit: "10mb", extended: true })); // to parse urlencoded body
 app.use(cookieParser()); // to parse cookies
 app.use(cors({
-  origin: process.env.VITE_FRONTEND_URL,
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 }))
 
