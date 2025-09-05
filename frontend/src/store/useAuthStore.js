@@ -12,6 +12,7 @@ export const useAuthStore = create((set, get) => ({
     isUpdatingProfile: false,
     isCheckingAuth:true,
     onlineUsers: [],
+    socket: null,
 
     checkAuth: async() => {
         try {
@@ -20,7 +21,7 @@ export const useAuthStore = create((set, get) => ({
             set({authUser:res.data});
             get().connectSocket();
         } catch (error) {
-            console.log("Error checking auth:", error);
+            console.log("Error in useAuthStore in checking auth:", error);
             set({authUser:null});
             
         }finally{
