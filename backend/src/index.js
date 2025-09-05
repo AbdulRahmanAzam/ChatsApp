@@ -20,6 +20,7 @@ app.use(express.urlencoded({ limit: "10mb", extended: true })); // to parse urle
 app.use(cookieParser()); // to parse cookies
 app.use(cors({
   origin: process.env.FRONTEND_URL,
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 }))
 
@@ -28,6 +29,19 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoute);
 app.use("/api/messages", messageRoute);
+
+// to test the backend connection
+app.get("/api/test", (req, res) => {
+  console.log("Test endpoint hit at:", new Date().toISOString());
+  console.log("Request headers:", req.headers);
+  console.log("Origin:", req.headers.origin);
+  
+  res.status(200).json({ 
+    message: "Backend is working!", 
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  });
+});
 
 
 server.listen(PORT, () => {
